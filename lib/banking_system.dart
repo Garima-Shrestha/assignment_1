@@ -4,6 +4,18 @@ abstract class BankAccount {
   String _accountHolderName;
   double _bankBalance;
 
+  List<String> _transaction = [];
+  void addTransaction(String transaction) {
+    _transaction.add(transaction);
+  }
+
+  void printTransaction() {
+    print("Transaction History for account $getAccountNumber: ");
+    for (String trans in _transaction) {
+      print(trans);
+    }
+  }
+
   // Methods
   void withdraw(double amount);
   void deposit(double amount);
@@ -69,6 +81,7 @@ class SavingsAccount extends BankAccount implements InterestBearing {
 
     setbankBalance = getbankBalance - amount;
     _withdrawalsThisMonth++;
+    addTransaction("Withdrawn: \$$amount, New Balance: \$$getbankBalance");
     print(
       "Withdrawal completed successfully in account $getAccountNumber. Your new balance is: \$$getbankBalance",
     );
@@ -77,6 +90,7 @@ class SavingsAccount extends BankAccount implements InterestBearing {
   @override
   void deposit(double amount) {
     setbankBalance = getbankBalance + amount;
+    addTransaction("Deposited: \$$amount, New Balance: \$$getbankBalance");
     print(
       "Amount Deposited Successfully in account $getAccountNumber. Your new balance is: \$$getbankBalance",
     );
@@ -110,6 +124,7 @@ class CheckingAccount extends BankAccount {
       );
       setbankBalance = getbankBalance - _overdraftFee;
     }
+    addTransaction("Withdrawn: \$$amount, New Balance: \$$getbankBalance");
     print(
       "Withdrawal of \$$amount completed in account $getAccountNumber. Current balance: \$$getbankBalance",
     );
@@ -118,6 +133,7 @@ class CheckingAccount extends BankAccount {
   @override
   void deposit(double amount) {
     setbankBalance = getbankBalance + amount;
+    addTransaction("Deposited: \$$amount, New Balance: \$$getbankBalance");
     print(
       "Amount Deposited Successfully in account $getAccountNumber. Your new balance is: \$$getbankBalance",
     );
@@ -143,11 +159,13 @@ class PremiumAccount extends BankAccount implements InterestBearing {
       return;
     }
     setbankBalance = getbankBalance - amount;
+    addTransaction("Withdrawn: \$$amount, New Balance: \$$getbankBalance");
   }
 
   @override
   void deposit(double amount) {
     setbankBalance = getbankBalance + amount;
+    addTransaction("Deposited: \$$amount, New Balance: \$$getbankBalance");
     print(
       "Amount Deposited Successfully in account $getAccountNumber. Your new balance is: \$$getbankBalance",
     );
@@ -156,6 +174,50 @@ class PremiumAccount extends BankAccount implements InterestBearing {
   @override
   double calculateInterest() {
     return getbankBalance * 0.05;
+  }
+}
+
+// New Student Account
+class StudentAccount extends BankAccount implements InterestBearing {
+  static const double _maximumBalance = 5000;
+
+  StudentAccount(
+    int accountNumber,
+    String accountHolderName,
+    double bankBalance,
+  ) : super(accountNumber, accountHolderName, bankBalance);
+
+  @override
+  void withdraw(double amount) {
+    if (amount > getbankBalance) {
+      print(
+        "Withdrawal denied in account $getAccountNumber. Not enough balance.",
+      );
+      return;
+    }
+    setbankBalance = getbankBalance - amount;
+    addTransaction("Withdrawn: \$$amount, New Balance: \$$getbankBalance");
+    print("Withdrawal Successful. New balance: \$$getbankBalance");
+  }
+
+  @override
+  void deposit(double amount) {
+    if (getbankBalance + amount > _maximumBalance) {
+      print(
+        "Deposit denied in account $getAccountNumber. Cannot exceed maximum balance of \$_maximumBalance.",
+      );
+      return;
+    }
+    setbankBalance = getbankBalance + amount;
+    addTransaction("Deposited: \$$amount, New Balance: \$$getbankBalance");
+    print(
+      "Deposit Successful in account $getAccountNumber. New Balance: \$$getbankBalance",
+    );
+  }
+
+  @override
+  double calculateInterest() {
+    return getbankBalance * 0.01;
   }
 }
 
@@ -215,9 +277,28 @@ class Bank {
       );
     } else {
       toAccount.deposit(amount);
+      fromAccount.addTransaction(
+        "Transfered \$$amount to account ${toAccount.getAccountNumber}",
+      );
+      toAccount.addTransaction(
+        "Received \$$amount from account ${fromAccount.getAccountNumber}",
+      );
       print(
         "$amount succcessfully transfered from ${fromAccount.getAccountNumber} to ${toAccount.getAccountNumber}.",
       );
+    }
+  }
+
+  // Apply Monthly Interest
+  void applyMonthlyInterest() {
+    for (BankAccount account in _accounts) {
+      if (account is InterestBearing) {
+        double interest = (account as InterestBearing).calculateInterest();
+        account.deposit(interest);
+        print(
+          "Applied \$$interest interest to account ${account.getAccountNumber}",
+        );
+      }
     }
   }
 
@@ -265,4 +346,17 @@ void main() {
 
   print("\nBank Accounts Reports:");
   bank.generateReport();
+
+  BankAccount studentAccount = StudentAccount(500, "Gita", 4000);
+  bank.createAccount(studentAccount);
+  print("\nApplying Monthly Interest: ");
+  bank.applyMonthlyInterest();
+  print("\nBank Reports: ");
+  bank.generateReport();
+
+  // Transaction History
+  savingAccount.printTransaction();
+  checkingAccount.printTransaction();
+  premiumAccount.printTransaction();
+  studentAccount.printTransaction();
 }
