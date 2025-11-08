@@ -78,7 +78,7 @@ class SavingsAccount extends BankAccount implements InterestBearing {
   void deposit(double amount) {
     setbankBalance = getbankBalance + amount;
     print(
-      "Amount Deposited Successfully. Your new balance is: \$$getbankBalance",
+      "Amount Deposited Successfully in account $getAccountNumber. Your new balance is: \$$getbankBalance",
     );
   }
 
@@ -119,7 +119,7 @@ class CheckingAccount extends BankAccount {
   void deposit(double amount) {
     setbankBalance = getbankBalance + amount;
     print(
-      "Amount Deposited Successfully. Your new balance is: \$$getbankBalance",
+      "Amount Deposited Successfully in account $getAccountNumber. Your new balance is: \$$getbankBalance",
     );
   }
 }
@@ -149,7 +149,7 @@ class PremiumAccount extends BankAccount implements InterestBearing {
   void deposit(double amount) {
     setbankBalance = getbankBalance + amount;
     print(
-      "Amount Deposited Successfully. Your new balance is: \$$getbankBalance",
+      "Amount Deposited Successfully in account $getAccountNumber. Your new balance is: \$$getbankBalance",
     );
   }
 
