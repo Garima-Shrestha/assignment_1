@@ -216,7 +216,7 @@ class Bank {
     } else {
       toAccount.deposit(amount);
       print(
-        "Rs.$amount succcessfully transfered from ${fromAccount.getAccountNumber} to ${toAccount.getAccountNumber}.",
+        "$amount succcessfully transfered from ${fromAccount.getAccountNumber} to ${toAccount.getAccountNumber}.",
       );
     }
   }
